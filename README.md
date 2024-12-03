@@ -14,3 +14,8 @@ Official [GitHub repository](https://github.com/openpbs/openpbs/tree/master) con
 - [Setting up OpenPBS on only one computer](https://community.openpbs.org/t/setting-up-openpbs-on-only-one-computer/2306)
 - [Quick Guide to Setting Up OpenPBS](http://www.rguha.net/misc/qopbs.html)
 - [PBS installation on a single execution host](https://community.openpbs.org/t/pbs-installation-on-a-single-execution-host/2600)
+
+### Problems
+
+- SELinux status (must be disabled)
+- Firewall (are ports open?)
