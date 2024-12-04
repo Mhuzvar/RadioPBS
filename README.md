@@ -18,14 +18,7 @@ Official [GitHub repository](https://github.com/openpbs/openpbs/tree/master) con
 ### Problems
 
 No precompiled package available, installed from [source](https://github.com/openpbs/openpbs/tree/master) on 12.8 Bookworm.
-
-- Initially some problems with firewall (closed ports)
-- `qstat -B` gives:
-> `Connection refused`
->
-> `qstat: cannot connect to server ubuntu (errno=15010)`
-- from server_logs:
-> `pbs_status_db exit code 1`
+Works fine when following steps from setup_pbs.sh.
 
 
 #### Troubleshooting
@@ -48,9 +41,7 @@ The .deb files contain some conflicting libraries (not all should be installed?)
 
 #### From Source
 
-Installing from source leads to the exact same problems as in the case of Debian (errno=15010 and exit code 1).
-Opening all ports from 1024 down moved errno to 15031 in some cases.
-The problem was with /var/spool/pbs/datastore (needs to be removed first).
+Works fine.
 
 
 #### Troubleshooting
