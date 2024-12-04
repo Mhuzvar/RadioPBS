@@ -1,0 +1,176 @@
+    1  sudo apt update && sudo apt upgrade -y
+    2  unzip openpbs_23.06.06.ubuntu_20.04.zip 
+    3  cd openpbs_23.06.06.ubuntu_20.04/
+    4  sudo apt install ./openpbs-client_23.06.06-1_amd64.deb ./openpbs-debuginfo_23.06.06-1_amd64.deb ./openpbs-devel_23.06.06-1_amd64.deb ./openpbs-execution_23.06.06-1_amd64.deb ./openpbs-server_23.06.06-1_amd64.deb 
+    5  sudo apt install ./openpbs-server_23.06.06-1_amd64.deb 
+    6  sudo apt list
+    7  sudo apt list --installed
+    8  sudo apt list --installed | grep openpbs
+    9  sudo apt remove openpbs*
+   10  sudo apt remove openpbs-client openpbs-debuginfo openpbs-devel
+   11  sudo apt install ./openpbs-server_23.06.06-1_amd64.deb 
+   12  qstat -B
+   13  sudo systemctl start pbs.service
+   14  sudo systemctl status pbs.service
+   15  sudo nano /etc/pbs.conf 
+   16  sudo systemctl start pbs.service
+   17  sudo chmod 4755 /opt/pbs/sbin/pbs_iff /opt/pbs/sbin/pbs_rcp
+   18  sudo /etc/init.d/pbs start
+   19  sudo apt update
+   20  sudo apt upgrade
+   21  sudo /opt/pbs/libexec/pbs_postinstall
+   22  sudo nano /etc/pbs.conf 
+   23  ls
+   24  sudo apt install ./openpbs-execution_23.06.06-1_amd64.deb 
+   25  sudo apt install ./openpbs-debuginfo_23.06.06-1_amd64.deb 
+   26  sudo apt install ./openpbs-devel_23.06.06-1_amd64.deb 
+   27  . /etc/profile.d/pbs.sh
+   28  qstat -B
+   29  sudo reboot
+   30  qstat -B
+   31  sudo /etc/init.d/pbs start
+   32  dirname
+   33  sudo apt list --installed | grep openpbs
+   34  sudo apt remove openpbs-debuginfo openpbs-devel openpbs-server
+   35  cd ./Downloads/
+   36  git clone https://github.com/openpbs/openpbs.git
+   37  sudo apt install git
+   38  git clone https://github.com/openpbs/openpbs.git
+   39  cd ./openpbs
+   40  sudo apt install gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++
+   41  sudo apt install expat libedit2 postgresql python3 postgresql-contrib sendmail-bin sudo tcl tk libical3 postgresql-server-dev-all
+   42  sudo reboot
+   43  ./autogen.sh
+   44  ./configure --help
+   45  ./configure --prefix=/opt/pbs
+   46  sudo apt list --installed | grep postgresql
+   47  sudo apt search postgresql-devel
+   48  su -
+   49  sudo apt install gcc make libtool libhwloc-dev libx11-dev       libxt-dev libedit-dev libical-dev ncurses-dev perl       postgresql-server-dev-all postgresql-contrib python3-dev tcl-dev tk-dev swig       libexpat-dev libssl-dev libxext-dev libxft-dev autoconf       automake g++ libcjson-dev
+   50  sudo apt install expat libedit2 postgresql python3 postgresql-contrib sendmail-bin       sudo tcl tk libical3 postgresql-server-dev-all
+   51  ./configure --prefix=/opt/pbs
+   52  make
+   53  sudo make install
+   54  sudo /opt/pbs/libexec/pbs_postinstall
+   55  sudo nano /etc/pbs.conf
+   56  sudo chmod 4755 /opt/pbs/sbin/pbs_iff /opt/pbs/sbin/pbs_rcp
+   57  sudo systemctl start pbs.service
+   58  pbsnodes -a
+   59  qstat -B
+   60  sudo /etc/init.d/pbs start
+   61  cat /etc/profile.d/pbs.sh
+   62  . /etc/profile.d/pbs.sh
+   63  qstat -B
+   64  pbsnodes -a
+   65  cat /var/spool/pbs/server_logs/20241203
+   66  sudo nano /etc/hosts
+   67  sudo /etc/init.d/pbs stop
+   68  sudo /etc/init.d/pbs start
+   69  qstat -B
+   70  sudo nano /etc/hosts
+   71  qstat -B
+   72  cd ..
+   73  ls
+   74  cd ./openpbs_23.06.06.ubuntu_20.04/
+   75  sudo apt install ./openpbs-server_23.06.06-1_amd64.deb 
+   76  sudo /etc/init.d/pbs stop
+   77  sudo /etc/init.d/pbs start
+   78  sudo /etc/init.d/pbs status
+   79  sudo /opt/pbs/sbin/pbs_server
+   80  sudo ./opt/pbs/sbin/pbs_server
+   81  sudo /opt/pbs/sbin/pbs_server
+   82  sudo systemctl start pbs
+   83  sudo systemctl restart pbs
+   84  sudo /etc/init.d/pbs start
+   85  sudo /etc/init.d/pbs status
+   86  sudo systemctl status pbs
+   87  sudo systemctl enable pbs
+   88  sudo systemctl restart pbs
+   89  journalctl -u pbs
+   90  qstat -B
+   91  sudo /etc/init.d/pbs start
+   92  cat /var/spool/pbs/server_logs/20241203
+   93  cat /var/spool/pbs/sched_logs/20241203 
+   94  cat /var/spool/pbs/comm_logs/20241203 
+   95  cat /var/spool/pbs/mom_logs/20241203 
+   96  ls /var/spool/pbs/checkpoint/
+   97  sudo ls /var/spool/pbs/checkpoint/
+   98  cat /var/spool/pbs/spool/db_errfile_status_33393 
+   99  cat /var/spool/pbs/spool/db_errfile_status_32930 
+  100  cat /var/spool/pbs/server_logs/20241203
+  101  cat /var/spool/pbs/server_logs/20241203 | grep python
+  102  /etc/init.d/pbs status
+  103  sudo /etc/init.d/pbs start
+  104  /etc/init.d/pbs status
+  105  /opt/pbs/sbin/pbs_comm
+  106  sudo /opt/pbs/sbin/pbs_comm
+  107  /etc/init.d/pbs status
+  108  sudo /opt/pbs/sbin/pbs_comm start
+  109  /etc/init.d/pbs status
+  110  sestatus
+  111  chmod 1777 /var/run/postgresql/
+  112  sudo chmod 1777 /var/run/postgresql/
+  113  sudo /etc/init.d/pbs restart
+  114  sudo /etc/init.d/pbs status
+  115  qstat -fx
+  116  cat /var/spool/pbs/sched_logs/20241203 
+  117  netstat -nlt
+  118  sudo apt install net-tools
+  119  netstat -nlt
+  120  find / -name "postgresql.conf"
+  121  sudo find / -name "postgresql.conf"
+  122  cat <pre>/var/spool/pbs/datastore/postgresql.conf</pre>
+  123  cat /var/spool/pbs/datastore/postgresql.conf
+  124  sudo cat /var/spool/pbs/datastore/postgresql.conf
+  125  cat /var/spool/pbs/server_logs/20241203 
+  126  ufw
+  127  ufw -h
+  128  ufw disable
+  129  sudo ufw disable
+  130  sudo /etc/init.d/pbs restart
+  131  sudo /etc/init.d/pbs status
+  132  ps -ef | grep pbs_
+  133  pbs_hostn -v $PBS_SERVER
+  134  pbs_hostn -v pbshostname
+  135  hostname
+  136  pbs_hostn -v pbshost
+  137  ls
+  138  cd ./Downloads/
+  139  cd ./openpbs
+  140  ls
+  141  ./configure PBS_VERSION=23.06.16 --prefix=/opt/pbs
+  142  make
+  143  sudo make install
+  144  /opt/pbs/libexec/pbs_init.d --version
+  145  ./configure PBS_VERSION=23.06.06 --prefix=/opt/pbs
+  146  make
+  147  sudo make install
+  148  /opt/pbs/libexec/pbs_init.d --version
+  149  sudo /etc/init.d/pbs restart
+  150  sudo /etc/init.d/pbs status
+  151  qstat -B
+  152  ps -ef | grep pbs_
+  153  sudo /etc/init.d/pbs status
+  154  sudo iptables -L
+  155  sudo iptables -nL
+  156  sudo iptables -nL | grep 15001
+  157  su -
+  158  sudo su -
+  159  journalctl -r
+  160  history | grep postg
+  161  sudo find / -name "postgresql.conf"
+  162  sudo find / -name "postgresql"
+  163  sudo find / -name "postgresql/"
+  164  python --version
+  165  python3 --version
+  166  postgres --help
+  167  pg_ctl
+  168  sudo pg_ctl
+  169  sudo postgres --help
+  170  /etc/init.d/pbs stop
+  171  sudo /etc/init.d/pbs stop
+  172  sudo mv /var/spool/pbs/datastore /var/spool/pbs/datastore_
+  173  sudo /etc/init.d/pbs start
+  174  qstat -B
+  175  pbsnodes -a
+  176  history > history.txt

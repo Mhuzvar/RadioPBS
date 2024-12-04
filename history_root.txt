@@ -1,0 +1,24 @@
+    1  iptables -A INPUT -p tcp --dport 15001:15009 -j ACCEPT
+    2  iptables -A OUTPUT -p tcp --dport 15001:15009 -j ACCEPT
+    3  iptables -A INPUT -p tcp --dport 17001 -j ACCEPT
+    4  iptables -A OUTPUT -p tcp --dport 17001 -j ACCEPT
+    5  apt list --installed || grep openpbs
+    6  ufw
+    7  ufw --help
+    8  ufw disable
+    9  ufw status
+   10  reboot
+   11  ufw status
+   12  iptables -A INPUT -p tcp --dport 15001:15009 -j ACCEPT
+   13  iptables -A OUTPUT -p tcp --dport 15001:15009 -j ACCEPT
+   14  iptables -A INPUT -p tcp --dport 17001 -j ACCEPT
+   15  iptables -A OUTPUT -p tcp --dport 17001 -j ACCEPT
+   16  netfilter-persistent save
+   17  iptables-save
+   18  iptables -L
+   19  logout
+   20  iptables -A OUTPUT -p tcp --dport 1:1024 -j ACCEPT
+   21  iptables-save
+   22  iptables -L
+   23  logout
+   24  history > /home/user/history_root.txt
