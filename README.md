@@ -22,7 +22,6 @@ No precompiled package available, installed from [source](https://github.com/ope
 - Initially some problems with firewall (closed ports)
 - `qstat -B` gives:
 > `Connection refused`
->
 > `qstat: cannot connect to server ubuntu (errno=15010)`
 
 
