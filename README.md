@@ -24,6 +24,8 @@ No precompiled package available, installed from [source](https://github.com/ope
 > `Connection refused`
 >
 > `qstat: cannot connect to server ubuntu (errno=15010)`
+- from server_logs:
+> `pbs_status_db exit code 1`
 
 
 #### Troubleshooting
@@ -41,15 +43,19 @@ OpenPBS has [precompiled packages](https://www.openpbs.org/Download.aspx#downloa
 
 #### Precompiled
 
-...
+Precompiled packages come with no documentation.
+The .deb files contain some conflicting libraries (not all should be installed?) but we need both server and client which cannot be installed at the same time.
 
 #### From Source
 
-...
+Installing from source leads to the exact same problems as in the case of Debian (errno=15010 and exit code 1).
+Opening all ports from 1024 down moved errno to 15031 in some cases.
+The problem was with /var/spool/pbs/datastore (needs to be removed first).
+
 
 #### Troubleshooting
 
-...
+[ pbs_server not starting on Ubuntu 20.04 #2491 ](https://github.com/openpbs/openpbs/issues/2491)
 
 ### Notes
 
