@@ -14,8 +14,10 @@ sudo apt install git gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-
 
 # jako root? sudo su -
 
+# jen na ubuntu
 ufw disable
 
+# asi neni potreba
 iptables -A INPUT -p tcp --dport 15001:15009 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 15001:15009 -j ACCEPT
 iptables -A INPUT -p tcp --dport 17001 -j ACCEPT
@@ -36,9 +38,11 @@ cd ~/Downloads && git clone https://github.com/openpbs/openpbs.git && cd ~/Downl
 # nebo i bez PBS_VERSION
 ./configure PBS_VERSION=23.06.06 --prefix=/opt/pbs
 
-make
+make -j
 
 sudo make install
+
+/opt/pbs/libexec/pbs_init.d --version
 
 sudo /opt/pbs/libexec/pbs_postinstall
 
