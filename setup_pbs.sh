@@ -1,5 +1,13 @@
 #/bin/bash
 
+# jen na Debianu (nahradit username uzivatelskym jmenem)
+nano /etc/sudoers
+# najit radek s root ALL=(ALL:ALL) ALL a pod nej dat
+username ALL=(ALL:ALL) ALL
+# pripdane by melo fungovat i
+adduser username sudo
+#
+
 sudo apt update && sudo apt upgrade -y
 
 sudo apt install git gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++ expat libedit2 libcjson-dev postgresql python3 postgresql-contrib sendmail-bin tcl tk libical3 postgresql-server-dev-all -y
