@@ -17,12 +17,12 @@ Official [GitHub repository](https://github.com/openpbs/openpbs/tree/master) con
 
 ### Problems
 
-<<<<<<< HEAD
 No precompiled package available, installed from [source](https://github.com/openpbs/openpbs/tree/master) on 12.8 Bookworm.
 
 - Initially some problems with firewall (closed ports)
 - `qstat -B` gives:
 > `Connection refused`
+>
 > `qstat: cannot connect to server ubuntu (errno=15010)`
 
 
@@ -54,7 +54,3 @@ OpenPBS has [precompiled packages](https://www.openpbs.org/Download.aspx#downloa
 ### Notes
 
 - server logs in /var/spool/pbs/server_logs/ (Debian)
-=======
-- SELinux status (must be disabled)
-- Firewall (are ports open?)
->>>>>>> parent of 0014778 (241204 Debian attempt updates)
