@@ -1,5 +1,33 @@
 # RadioPBS
 
+PBS server runs on Debian 12.8 Bookworm. This repository contains instructions and hints for replicating the setup whenever neccessary.
+
+## Setting up PBS
+
+First, install [this version of Debian](https://cdimage.debian.org/debian-cd/12.8.0/amd64/iso-cd/). Once installed, add your user to sudoers:
+```
+$ nano /etc/sudoers
+```
+Find a line containing "root ALL=(ALL:ALL) ALL" and add the following line under it:
+```
+username ALL=(ALL:ALL) ALL
+```
+It should also be possible to just do `adduser username sudo`, but sometimes this doesn't work.
+
+Once the user has sudo rights, you can:
+```
+$ sudo apt update && sudo apt upgrade
+$ sudo apt install git 
+$ cd ~/Documents
+$ git clone https://github.com/Mhuzvar/RadioPBS.git
+```
+
+You should now be in your `Documents` folder and see a folder names `RadioPBS`. `cd` into the folder and start installation:
+```
+$ cd ~/Documents/RadioPBS
+$ ./install_PBS.sh
+$ ./setup_PBS.sh
+```
 
 
 ## OpenPBS
