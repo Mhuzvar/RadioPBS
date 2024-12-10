@@ -1,6 +1,10 @@
 #/bin/bash
 
 # WIP! DO NOT USE YET!
+# The user has to be in the sudoers group
+# adduser <username> sudo as root
+
+# Run ip a to find the name of the <network_interface>
 
 # Function to display usage
 usage() {
@@ -55,9 +59,10 @@ sudo sed -i "s/ ${CODENAME}-security main$/ ${CODENAME}-security main contrib no
 
 sudo apt update && apt upgrade -y
 
-sudo apt install gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++ expat libedit2 libcjson-dev postgresql python3 postgresql-contrib sendmail-bin tcl tk libical3 postgresql-server-dev-all -y
+sudo apt install git gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++ expat libedit2 libcjson-dev postgresql python3 postgresql-contrib sendmail-bin tcl tk libical3 postgresql-server-dev-all -y
 
-cd ~/Downloads && git clone https://github.com/openpbs/openpbs.git && cd ~/Downloads/openpbs
+# cd ~/Downloads && git clone https://github.com/openpbs/openpbs.git && cd ~/Downloads/openpbs
+git clone https://github.com/openpbs/openpbs.git && cd ./openpbs
 
 ./autogen.sh
 
@@ -78,8 +83,6 @@ sudo chmod 1777 /var/run/postgresql/
 
 sudo chmod 4755 /opt/pbs/sbin/pbs_iff /opt/pbs/sbin/pbs_rcp
 
-. /etc/profile.d/pbs.sh
-
 sudo systemctl enable pbs
 
 sudo /etc/init.d/pbs stop
@@ -88,4 +91,6 @@ sudo rm -rf /var/spool/pbs/datastore
 
 sudo /etc/init.d/pbs start
 
-cd ~/Documents/RadioPBS
+. /etc/profile.d/pbs.sh
+
+#cd ~/Documents/RadioPBS
