@@ -1,5 +1,7 @@
 #/bin/bash
 
+# WIP! DO NOT USE YET!
+
 # Function to display usage
 usage() {
     echo "Usage: $0 <network_interface>"
@@ -40,9 +42,7 @@ if [[ -z $CURRENT_IP ]]; then
 fi
 
 # Replace the IP address
-sed -i "s/^$CURRENT_IP\s*$HOSTNAME/$INTERFACE_IP $HOSTNAME/" /etc/hosts
-
-# WIP! DO NOT USE YET!
+sudo sed -i "s/^$CURRENT_IP\s*$HOSTNAME/$INTERFACE_IP $HOSTNAME/" /etc/hosts
 
 sudo apt install gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++ expat libedit2 libcjson-dev postgresql python3 postgresql-contrib sendmail-bin tcl tk libical3 postgresql-server-dev-all -y
 
@@ -61,7 +61,7 @@ sudo make install
 sudo /opt/pbs/libexec/pbs_postinstall
 
 # change PBS_START_MOM=1 in /etc/pbs.conf
-sed -i 's/^PBS_START_MOM=0/PBS_START_MOM=1/' /etc/pbs.conf
+sudo sed -i 's/^PBS_START_MOM=0/PBS_START_MOM=1/' /etc/pbs.conf
 
 sudo chmod 1777 /var/run/postgresql/
 
