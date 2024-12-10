@@ -44,6 +44,17 @@ fi
 # Replace the IP address
 sudo sed -i "s/^$CURRENT_IP\s*$HOSTNAME/$INTERFACE_IP $HOSTNAME/" /etc/hosts
 
+# Update repository list to add contrib and non-free
+CODENAME=$(grep -oP 'VERSION_CODENAME=\K\w+' /etc/os-release)
+
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+
+sudo sed -i "s/ $CODENAME main$/ $CODENAME main contrib non-free non-free-firmware/" /etc/apt/sources.list
+sudo sed -i "s/ ${CODENAME}-updates main$/ ${CODENAME}-updates main contrib non-free non-free-firmware/" /etc/apt/sources.list
+sudo sed -i "s/ ${CODENAME}-security main$/ ${CODENAME}-security main contrib non-free non-free-firmware/" /etc/apt/sources.list
+
+sudo apt update && apt upgrade -y
+
 sudo apt install gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev libical-dev ncurses-dev perl postgresql-server-dev-all postgresql-contrib unzip python3-dev tcl-dev tk-dev swig libexpat-dev libssl-dev libxext-dev libxft-dev autoconf automake g++ expat libedit2 libcjson-dev postgresql python3 postgresql-contrib sendmail-bin tcl tk libical3 postgresql-server-dev-all -y
 
 cd ~/Downloads && git clone https://github.com/openpbs/openpbs.git && cd ~/Downloads/openpbs
