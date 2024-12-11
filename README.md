@@ -5,7 +5,7 @@ PBS server runs on Debian 12.8 Bookworm. This repository contains instructions a
 ## Setting up PBS
 
 First, install [this version of Debian](https://cdimage.debian.org/debian-cd/12.8.0/amd64/iso-cd/). Once installed, add your user to sudoers:
-```
+```console
 $ nano /etc/sudoers
 ```
 Find a line containing "root ALL=(ALL:ALL) ALL" and add the following line under it:
@@ -14,23 +14,34 @@ username ALL=(ALL:ALL) ALL
 ```
 It should also be possible to just do `adduser username sudo`, but sometimes this doesn't work.
 
-Once the user has sudo rights, you can:
-```
+Once the user has sudo rights there are two ways to continue with the installation.
+
+Either manually install git and clone this entire repository:
+```console
 $ sudo apt update && sudo apt upgrade
 $ sudo apt install git 
 $ cd ~/Documents
 $ git clone https://github.com/Mhuzvar/RadioPBS.git
+$ cd RadioPBS
+```
+or only download the installation script (git and updates are later installed from within the script):
+```console
+$ wget https://raw.githubusercontent.com/Mhuzvar/RadioPBS/refs/heads/main/install_PBS.sh
+```
+Whichever option you choose, you should now be able to run the prepared installation script.
+```console
+$ sudo ./install_PBS.sh
+$ . /etc/profile.d/pbs.sh
 ```
 
-You should now be in your `Documents` folder and see a folder names `RadioPBS`. `cd` into the folder and start installation:
-```
+PBS server should now be up and running in its default configuration. To replicate our setup, we are working on `setup_PBS.sh` to automate this step. **This script is not finished yet and may not work at best and break your installation at worst.**
+```console
 $ cd ~/Documents/RadioPBS
-$ ./install_PBS.sh
 $ ./setup_PBS.sh
 ```
 
 
-## OpenPBS
+## Older notes
 
 [MetaCentrum](https://metavo.metacentrum.cz/) uses [OpenPBS](https://www.openpbs.org/). There is no free alternative to my knowledge.
 OpenPBS offers packages for openSUSE Leap 15.4, Rocky Linux 8.8, and Ubuntu 18.04 and 20.04.
