@@ -8,14 +8,13 @@ First, install [this version of Debian](https://cdimage.debian.org/debian-cd/12.
 ```console
 $ nano /etc/sudoers
 ```
-Find a line containing "root ALL=(ALL:ALL) ALL" and add the following line under it:
+Find a line containing `root ALL=(ALL:ALL) ALL` and add the following line under it:
 ```
 username ALL=(ALL:ALL) ALL
 ```
 It should also be possible to just do `adduser username sudo`, but sometimes this doesn't work.
 
 Once the user has sudo rights there are two ways to continue with the installation.
-
 Either manually install git and clone this entire repository:
 ```console
 $ sudo apt update && sudo apt upgrade
