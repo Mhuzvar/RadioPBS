@@ -4,7 +4,121 @@ PBS server runs on Debian 12.8 Bookworm. This repository contains instructions a
 
 ## Setting up PBS
 
-First, install [this version of Debian](https://cdimage.debian.org/debian-cd/12.8.0/amd64/iso-cd/). Once installed, add your user to sudoers:
+### Installing OS (guide is incomplete)
+
+The following installation guide is based on [this youtube tutorial](https://www.youtube.com/watch?v=9htEaXAXfdg&ab_channel=JustAGuyLinux).
+
+Download [this version of Debian](https://cdimage.debian.org/debian-cd/12.11.0/amd64/iso-cd/) and make a bootable stick.
+
+Select `Advanced options ...` and `... Expert install`.
+
+Go through `Choose language`, `Configure the keyboard`, `Detect and mount instalation media`, and `Load installer components from installation media` choosing what fits or just entering through.
+
+Only `Detect network hardware` if connected to a network and if so, you may select `<Yes>` on Auto-configuration of network.
+Set hostname according to system admin instructions, domain name empty.
+
+In `Set up users and passwords` choose `<Yes>` on to Allow login as root question (choosing `<No>` skips root user creation and only adds sudoer user).
+Create root password and a user named tester.
+
+Go through `Configure the clock` and `Detect disk` by entering through.
+
+In `Partition disks` choose `Manual`.
+Select the drive that should contain the system (256 GB SSD in our case) and choose `<Yes>` to creating an empty partition table.
+Select `gpt`.
+Select the newly created `FREE SPACE` partition and `Create new partition`, set size to `500M` from `Beginning` and set `Use as:` to `EFI System Partition` (`Done setting up the partition` to continue).
+Select the rest of the `FREE SPACE`, `Create new partition`, maximum size, set `Use as:` to `btrfs journaling file system` and `Done setting up the partition`.
+Select `Finish partitioning and write changes to disk`, choose `<No>` to returning and creting swap partition and choose `<Yes>` to write changes to disks.
+
+Press `Ctrl`+`Alt`+`F2`, press `Enter` and type:
+```console
+~ # df -h
+```
+You should see something like:
+```console
+Filesystem          Size    Used    Available   Use     Mounted on
+...                 ...     ...     ...         ...     ...
+/dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target
+/dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target/boot/efi
+```
+Continue:
+```console
+~ # umount /target/boot/efi/
+~ # umount /target/
+~ # mount /dev/nvme1n1p2 /mnt
+~ # cd mnt/
+~ # mv @rootfs/ @/
+~ # btrfs su cr @home
+~ # btrfs su cr @root
+~ # btrfs su cr @log
+~ # btrfs su cr @tmp
+~ # btrfs su cr @opt
+~ # mount -o noatime,compress=zstd,subvol=@ /dev/nvme1n1p2 /target
+~ # mkdir -p /target/boot/efi
+~ # mkdir -p /target/home
+~ # mkdir -p /target/root
+~ # mkdir -p /target/var/log
+~ # mkdir -p /target/tmp
+~ # mkdir -p /target/opt
+~ # mount -o noatime,compress=zstd,subvol=@home /dev/nvme1n1p2 /target/home
+~ # mount -o noatime,compress=zstd,subvol=@root /dev/nvme1n1p2 /target/root
+~ # mount -o noatime,compress=zstd,subvol=@log /dev/nvme1n1p2 /target/var/log
+~ # mount -o noatime,compress=zstd,subvol=@tmp /dev/nvme1n1p2 /target/tmp
+~ # mount -o noatime,compress=zstd,subvol=@opt /dev/nvme1n1p2 /target/opt
+~ # mount /dev/nvme1n1p1 /target/boot/efi
+~ # nano /taget/etc/fstab
+```
+You should see the content of `fstab` file now.
+It should look something like:
+```
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# systemd generates mount units based on this file, see systemd.mount(5).
+# Please run `systemctl daemon-reload` after making changes here.
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/nvme1n1p2 during installation
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /               btrfs   defaults,subvol=@rootfs 0       0
+# /boot/efi was on /dev/nvme1n1p1 during installation
+UUID=XXXX-XXXX  /boot/efi       vfat        umask=0077      0       1
+```
+Navigate to the first line starting with `UUID=` and change the part after `btrfs` to:
+```
+noatime,compress=zstd,subvol=@   0       0
+```
+Press `Ctrl`+`K` to cut the line and press `Ctrl`+`U` six times to make six copies.
+Modify the lines so it looks like:
+```
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /         btrfs  noatime,compress=zstd,subvol=@     0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /home     btrfs  noatime,compress=zstd,subvol=@home 0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /root     btrfs  noatime,compress=zstd,subvol=@root 0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /var/log  btrfs  noatime,compress=zstd,subvol=@log  0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /tmp      btrfs  noatime,compress=zstd,subvol=@tmp  0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /opt      btrfs  noatime,compress=zstd,subvol=@opt  0   0
+```
+Press `Ctrl`+`O`, then `Enter`, then `Ctrl`+`X` and finally `Ctrl`+`Alt`+`F1`.
+You should be back in the installation menu.
+
+Select `Install the base system`, choose `linux-image-amd64` and `generic: include all available drivers`.
+
+In `Configure the package manager` use any http network mirror.
+Choose `<Yes>` both to use non-free firmware and to use non-free software and `<No>` to source repositories.
+Select all three services that provide services.
+
+In `Select and install software` choose `No automatic updates` and `<No>` to survey participation.
+Choose `standard system utilities` and (if connected to the internet) `SSH server` to install.
+
+In `Install the GRUB bootloader`, choose `<No>` to force GRUB to removable path, `<Yes>` to updating NVRAM variables and `<No>` to `os-prober`.
+
+Select `Finish the installation`, `<Yes>` to UTC clock and `<Continue>` to reboot.
+The base system should be installed and ready.
+
+### Preparing the system
+
+Once installed, add your user to sudoers:
 ```console
 $ nano /etc/sudoers
 ```
@@ -56,7 +170,7 @@ Official [GitHub repository](https://github.com/openpbs/openpbs/tree/master) con
 ### Problems
 
 No precompiled package available, installed from [source](https://github.com/openpbs/openpbs/tree/master) on 12.8 Bookworm.
-Works fine when following steps from setup_pbs.sh.
+Works fine when following steps from `setup_pbs.sh`.
 
 
 #### Troubleshooting
