@@ -17,8 +17,9 @@ Go through `Choose language`, `Configure the keyboard`, `Detect and mount instal
 Only `Detect network hardware` if connected to a network and if so, you may select `<Yes>` on Auto-configuration of network.
 Set hostname according to system admin instructions, domain name empty.
 
-In `Set up users and passwords` choose `<Yes>` on to Allow login as root question (choosing `<No>` skips root user creation and only adds sudoer user).
+In `Set up users and passwords` choose `<Yes>` on to Allow login as root question[^root].
 Create root password and a user named tester.
+[^root]: Choosing `<No>` skips root user creation and only adds sudoer user.
 
 Go through `Configure the clock` and `Detect disk` by entering through.
 
@@ -40,7 +41,7 @@ Filesystem          Size    Used    Available   Use     Mounted on
 /dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target
 /dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target/boot/efi
 ```
-Continue:
+Continue[^zstd]:
 ```console
 ~ # umount /target/boot/efi/
 ~ # umount /target/
@@ -67,6 +68,8 @@ Continue:
 ~ # mount /dev/nvme1n1p1 /target/boot/efi
 ~ # nano /taget/etc/fstab
 ```
+[^zstd]: Setting compress=zstd as currently written defaults to 3. This results in relatively high CPU usage which may be improved with marginal hit to compression ratio by setting `compress=zstd:1` for NVMe drives (our case) or `compress=zstd:2` for SATA SSD drives. **The setting needs to match in `fstab`!**
+
 You should see the content of `fstab` file now.
 It should look something like:
 ```
@@ -114,7 +117,8 @@ Choose `standard system utilities` and (if connected to the internet) `SSH serve
 In `Install the GRUB bootloader`, choose `<No>` to force GRUB to removable path, `<Yes>` to updating NVRAM variables and `<No>` to `os-prober`.
 
 Select `Finish the installation`, `<Yes>` to UTC clock and `<Continue>` to reboot.
-The base system should be installed and ready.
+The base system should be installed and ready[^swap].
+[^swap]: System has no swap yet, will be added later.
 
 ### Preparing the system
 
