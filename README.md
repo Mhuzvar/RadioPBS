@@ -1,6 +1,6 @@
 # RadioPBS
 
-PBS server runs on Debian 12.8 Bookworm. This repository contains instructions and hints for replicating the setup whenever neccessary.
+PBS server runs on Debian 12.11 Bookworm. This repository contains instructions and hints for replicating the setup whenever neccessary.
 
 ## Setting up PBS
 
@@ -15,11 +15,10 @@ Select `Advanced options ...` and `... Expert install`.
 Go through `Choose language`, `Configure the keyboard`, `Detect and mount instalation media`, and `Load installer components from installation media` choosing what fits or just entering through.
 
 Only `Detect network hardware` if connected to a network and if so, you may select `<Yes>` on Auto-configuration of network.
-Set hostname according to system admin instructions, domain name empty.
+Leave server addresses empty, set hostname (according to department instructions), leave domain name empty.
 
-In `Set up users and passwords` choose `<Yes>` on to Allow login as root question[^root].
-Create root password and a user named tester.
-[^root]: Choosing `<No>` skips root user creation and only adds sudoer user.
+In `Set up users and passwords` choose `<Yes>` on to Allow login as root question.
+Create root password and create a user named tester with a different password.
 
 Go through `Configure the clock` and `Detect disk` by entering through.
 
@@ -28,7 +27,7 @@ Select the drive that should contain the system (256 GB SSD in our case) and cho
 Select `gpt`.
 Select the newly created `FREE SPACE` partition and `Create new partition`, set size to `500M` from `Beginning` and set `Use as:` to `EFI System Partition` (`Done setting up the partition` to continue).
 Select the rest of the `FREE SPACE`, `Create new partition`, maximum size, set `Use as:` to `btrfs journaling file system` and `Done setting up the partition`.
-Select `Finish partitioning and write changes to disk`, choose `<No>` to returning and creting swap partition and choose `<Yes>` to write changes to disks.
+Select `Finish partitioning and write changes to disk`, choose `<No>` to returning and creating swap partition and choose `<Yes>` to write changes to disks.
 
 Press `Ctrl`+`Alt`+`F2`, press `Enter` and type:
 ```console
@@ -38,8 +37,8 @@ You should see something like:
 ```console
 Filesystem          Size    Used    Available   Use     Mounted on
 ...                 ...     ...     ...         ...     ...
-/dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target
-/dev/nvme1n1p2      238.0G  3.8M    236.0G      0%      /target/boot/efi
+/dev/nvme1n1p2      238.0G  5.8M    236.0G      0%      /target
+/dev/nvme1n1p1      475.1M  4.0K    475.1M      0%      /target/boot/efi
 ```
 Continue[^zstd]:
 ```console
@@ -47,28 +46,28 @@ Continue[^zstd]:
 ~ # umount /target/
 ~ # mount /dev/nvme1n1p2 /mnt
 ~ # cd mnt/
-~ # mv @rootfs/ @/
-~ # btrfs su cr @home
-~ # btrfs su cr @root
-~ # btrfs su cr @log
-~ # btrfs su cr @tmp
-~ # btrfs su cr @opt
-~ # mount -o noatime,compress=zstd,subvol=@ /dev/nvme1n1p2 /target
-~ # mkdir -p /target/boot/efi
-~ # mkdir -p /target/home
-~ # mkdir -p /target/root
-~ # mkdir -p /target/var/log
-~ # mkdir -p /target/tmp
-~ # mkdir -p /target/opt
-~ # mount -o noatime,compress=zstd,subvol=@home /dev/nvme1n1p2 /target/home
-~ # mount -o noatime,compress=zstd,subvol=@root /dev/nvme1n1p2 /target/root
-~ # mount -o noatime,compress=zstd,subvol=@log /dev/nvme1n1p2 /target/var/log
-~ # mount -o noatime,compress=zstd,subvol=@tmp /dev/nvme1n1p2 /target/tmp
-~ # mount -o noatime,compress=zstd,subvol=@opt /dev/nvme1n1p2 /target/opt
-~ # mount /dev/nvme1n1p1 /target/boot/efi
-~ # nano /taget/etc/fstab
+mnt/ # mv @rootfs/ @/
+mnt/ # btrfs su cr @home
+mnt/ # btrfs su cr @root
+mnt/ # btrfs su cr @log
+mnt/ # btrfs su cr @tmp
+mnt/ # btrfs su cr @opt
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@ /dev/nvme1n1p2 /target
+mnt/ # mkdir -p /target/boot/efi
+mnt/ # mkdir -p /target/home
+mnt/ # mkdir -p /target/root
+mnt/ # mkdir -p /target/var/log
+mnt/ # mkdir -p /target/tmp
+mnt/ # mkdir -p /target/opt
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@home /dev/nvme1n1p2 /target/home
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@root /dev/nvme1n1p2 /target/root
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@log /dev/nvme1n1p2 /target/var/log
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@tmp /dev/nvme1n1p2 /target/tmp
+mnt/ # mount -o noatime,compress=zstd:1,subvol=@opt /dev/nvme1n1p2 /target/opt
+mnt/ # mount /dev/nvme1n1p1 /target/boot/efi
+mnt/ # nano /taget/etc/fstab
 ```
-[^zstd]: Setting compress=zstd as currently written defaults to 3. This results in relatively high CPU usage which may be improved with marginal hit to compression ratio by setting `compress=zstd:1` for NVMe drives (our case) or `compress=zstd:2` for SATA SSD drives. **The setting needs to match in `fstab`!**
+[^zstd]: Setting `compress=zstd` defaults to 3. This results in relatively high CPU usage which may be improved with marginal hit to compression ratio by setting `compress=zstd:1` for NVMe drives (our case) or `compress=zstd:2` for SATA SSD drives. **The setting needs to match in `fstab`!**
 
 You should see the content of `fstab` file now.
 It should look something like:
@@ -88,26 +87,26 @@ UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /               btrfs   defaults,subvo
 # /boot/efi was on /dev/nvme1n1p1 during installation
 UUID=XXXX-XXXX  /boot/efi       vfat        umask=0077      0       1
 ```
-Navigate to the first line starting with `UUID=` and change the part after `btrfs` to:
+Navigate to the first line starting with `UUID=` and change the part after `btrfs` so the line looks like:
 ```
-noatime,compress=zstd,subvol=@   0       0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /         btrfs  noatime,compress=zstd:1,subvol=@     0   0
 ```
 Press `Ctrl`+`K` to cut the line and press `Ctrl`+`U` six times to make six copies.
 Modify the lines so it looks like:
 ```
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /         btrfs  noatime,compress=zstd,subvol=@     0   0
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /home     btrfs  noatime,compress=zstd,subvol=@home 0   0
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /root     btrfs  noatime,compress=zstd,subvol=@root 0   0
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /var/log  btrfs  noatime,compress=zstd,subvol=@log  0   0
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /tmp      btrfs  noatime,compress=zstd,subvol=@tmp  0   0
-UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /opt      btrfs  noatime,compress=zstd,subvol=@opt  0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /         btrfs  noatime,compress=zstd:1,subvol=@     0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /home     btrfs  noatime,compress=zstd:1,subvol=@home 0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /root     btrfs  noatime,compress=zstd:1,subvol=@root 0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /var/log  btrfs  noatime,compress=zstd:1,subvol=@log  0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /tmp      btrfs  noatime,compress=zstd:1,subvol=@tmp  0   0
+UUID=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX /opt      btrfs  noatime,compress=zstd:1,subvol=@opt  0   0
 ```
 Press `Ctrl`+`O`, then `Enter`, then `Ctrl`+`X` and finally `Ctrl`+`Alt`+`F1`.
 You should be back in the installation menu.
 
 Select `Install the base system`, choose `linux-image-amd64` and `generic: include all available drivers`.
 
-In `Configure the package manager` use any http network mirror.
+In `Configure the package manager` choose `<Yes>` to use a network mirror and pick any http network mirror with no proxy.
 Choose `<Yes>` both to use non-free firmware and to use non-free software and `<No>` to source repositories.
 Select all three services that provide services.
 
