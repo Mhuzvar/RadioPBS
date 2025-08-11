@@ -17,7 +17,7 @@ First, update the package list and install the necessary software:
 
 ```bash
 sudo apt update
-sudo apt install -y tigervnc-standalone-server openbox nitrogen
+sudo apt install -y tigervnc-standalone-server openbox nitrogen python3-numpy
 ```
 
   - **`tigervnc-standalone-server`**: The core VNC server software.
