@@ -139,7 +139,7 @@ VNC_PORT=$(echo ${VNC_DISPLAY#:} | awk '{print 5900 + $1}')
 NODE_HOSTNAME=$(hostname -f)
 NODE_IP=$(hostname -I | awk '{print $1}') # Get the IP address of the host
 NOVNC_PROXY_PORT=$(echo ${VNC_DISPLAY#:} | awk '{print 6080 + $1}') # noVNC proxy port based on VNC display
-SSL_CERT="/home/adam/Code/Apptainer/def_files/self.pem" #change accordingly
+SSL_CERT="/etc/ssl/noVNC/self.pem" #change accordingly
 
 # --- Start noVNC Proxy ---
 echo "[INFO] Starting noVNC proxy on port ${NOVNC_PROXY_PORT}..."
