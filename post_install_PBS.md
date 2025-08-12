@@ -55,3 +55,20 @@ set queue workq acl_users += username
 ```
 set queue workq priority=90
 ```
+
+## cgroups tweaks
+
+It is also possible to use cgroups to further limit user resources (in certain scenarios).
+
+### limit ssh user resources
+```
+sudo mkdir -p /etc/systemd/system/user-.slice.d
+sudo tee /etc/systemd/system/user-.slice.d/limits.conf > /dev/null <<'EOF'
+[Slice]
+CPUQuota=10%
+MemoryHigh=1G
+EOF
+
+sudo systemctl daemon-reexec
+```
+The above limits each user that logs in via SSH to 1G of RAM and 10% of the CPU resources (less than one thread). If the user wants more, he/she has to submit a PBS job.
