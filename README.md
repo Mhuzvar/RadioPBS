@@ -172,6 +172,10 @@ You may need to adjust the /etc/hosts file and/or run the following commands (if
 $ sudo rm -rf /var/spool/pbs/datastore
 $ sudo /etc/init.d/pbs start
 ```
+Moreover, if you get `` and `` when you try to run a qsub job, you might need to run the following command as root:
+```console
+qmgr -c "set server flatuid=true"
+```
 
 PBS server should now be up and running in its default configuration. To replicate our setup, we are working on `setup_PBS.sh` to automate this step. **This script is not finished yet and may not work at best and break your installation at worst.**
 ```console
