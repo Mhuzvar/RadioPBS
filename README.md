@@ -4,7 +4,7 @@ PBS server runs on Debian 12.11 Bookworm. This repository contains instructions 
 
 ## Setting up PBS
 
-### Installing OS (guide is incomplete)
+### Installing OS
 
 The following installation guide is based on [this youtube tutorial](https://www.youtube.com/watch?v=9htEaXAXfdg&ab_channel=JustAGuyLinux).
 
@@ -107,17 +107,35 @@ You should be back in the installation menu.
 Select `Install the base system`, choose `linux-image-amd64` and `generic: include all available drivers`.
 
 In `Configure the package manager` choose `<Yes>` to use a network mirror and pick any http network mirror with no proxy.
-Choose `<Yes>` both to use non-free firmware and to use non-free software and `<No>` to source repositories.
-Select all three services that provide services.
+Choose `<Yes>` both to use non-free firmware, non-free software and source repositories.
+Select all three services that provide updates.
 
 In `Select and install software` choose `No automatic updates` and `<No>` to survey participation.
-Choose `standard system utilities` and (if connected to the internet) `SSH server` to install.
+Choose `standard system utilities` and `SSH server` to install.
 
 In `Install the GRUB bootloader`, choose `<No>` to force GRUB to removable path, `<Yes>` to updating NVRAM variables and `<No>` to `os-prober`.
 
 Select `Finish the installation`, `<Yes>` to UTC clock and `<Continue>` to reboot.
-The base system should be installed and ready[^swap].
-[^swap]: System has no swap yet, will be added later.
+
+Once rebooted, login as root.
+Install `zram`:
+```console
+root@hostname:~# apt install zram-tools
+```
+Open `zramswap` file
+```console
+root@hostname:~# nano /etc/defaults/zramswap
+```
+and uncomment the lines starting with `ALGO=` and `PERCENT=`.[^zram]
+[^zram]: The percentage defaults to 30 G on our system. This should be revisited.
+Restart the service:
+```console
+root@hostname:~# systemctl restart zramswap.service
+```
+
+Create an initial snapshot of the system with...
+
+The base system should be installed and ready.
 
 ### Preparing the system
 
