@@ -52,6 +52,7 @@ mnt/ # btrfs su cr @root
 mnt/ # btrfs su cr @log
 mnt/ # btrfs su cr @tmp
 mnt/ # btrfs su cr @opt
+mnt/ # btrfs su cr @.snapshots
 mnt/ # mount -o noatime,compress=zstd:1,subvol=@ /dev/nvme1n1p2 /target
 mnt/ # mkdir -p /target/boot/efi
 mnt/ # mkdir -p /target/home
@@ -118,16 +119,15 @@ In `Install the GRUB bootloader`, choose `<No>` to force GRUB to removable path,
 Select `Finish the installation`, `<Yes>` to UTC clock and `<Continue>` to reboot.
 
 Once rebooted, login as root.
-Install `zram`:
+Install basic uilities:
 ```console
-root@hostname:~# apt install zram-tools
+root@hostname:~# apt install sudo zram-tools nvidia-drivier snapper
 ```
-Open `zramswap` file
+and reboot afterwards. Open `zramswap` file
 ```console
-root@hostname:~# nano /etc/defaults/zramswap
+root@hostname:~# nano /etc/default/zramswap
 ```
-and uncomment the lines starting with `ALGO=` and `PERCENT=`.[^zram]
-[^zram]: The percentage defaults to 30 G on our system. This should be revisited.
+and uncomment the lines starting with `ALGO=` and `PERCENT=`. Change percentage to 25.
 Restart the service:
 ```console
 root@hostname:~# systemctl restart zramswap.service
