@@ -17,12 +17,11 @@ First, update the package list and install the necessary software:
 
 ```bash
 sudo apt update
-sudo apt install -y tigervnc-standalone-server openbox nitrogen python3-numpy
+sudo apt install -y tigervnc-standalone-server openbox python3-numpy
 ```
 
   - **`tigervnc-standalone-server`**: The core VNC server software.
   - **`openbox`**: A lightweight window manager. We use this to provide a graphical environment within the VNC session.
-  - **`nitrogen`**: A wallpaper setter for X11, which will be used to set a background for the Openbox session.
 
 ### 2\. Configure Openbox
 
@@ -33,7 +32,7 @@ We need to make some tweaks to Openbox to make it more usable in our VNC session
 Edit the Openbox menu file to include applications that the users should be able to launch. This file is located at `/etc/xdg/openbox/menu.xml`. You can use a text editor like `nano`:
 
 ```bash
-sudo nano /etc/xdg/openbox/menu.xml
+nano /etc/xdg/openbox/menu.xml
 ```
 
 For example, to add an entry for `xterm`, you would add a block like this within the `<menu>` tag:
@@ -57,9 +56,8 @@ sudo nano /etc/xdg/openbox/autostart
 Add the following line to the end of the file. This will download a wallpaper from the specified URL and set it as the desktop background:
 
 ```bash
-# Set a wallpaper using nitrogen
-wget -O /tmp/wallpaper.webp "https://fel.cvut.cz/dokumenty/3802/image-thumb__3802__ArticleImage/2022_web_hp_26.webp"
-nitrogen --set-zoom-fill /tmp/wallpaper.webp &
+# Set a wallpaper to a solid color
+xsetroot -solid "#265792" &
 ```
 
 The `&` at the end is crucial as it runs the command in the background, allowing the Openbox startup process to continue. The wallpaper can also be downloaded just once then referenced by nitrogen.
@@ -109,3 +107,10 @@ chmod +x pbs-launch-gui.sh
 ```
 
 After the script runs, a VNC session should be accessible by navigating to the specified URL (usually `https://<your-server-ip>:6080`) in your web browser.
+
+### 5\. Tweak the VNC permissions
+```bash
+chgrp -R users /etc/ssl/noVNC
+chmod -R 750 /etc/ssl/noVNC
+```
+
