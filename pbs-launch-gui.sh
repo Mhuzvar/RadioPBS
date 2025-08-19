@@ -13,7 +13,7 @@ VNC_SESSION="openbox-session"
 VNC_ARGS="-localhost -geometry ${VNC_GEOMETRY} -depth ${VNC_DEPTH} -xstartup ${VNC_SESSION}"
 
 # --- noVNC Configuration ---
-NOVNC_DIR="noVNC"
+NOVNC_DIR="/etc/ssl/noVNC/noVNC"
 NOVNC_ZIP_URL="https://github.com/novnc/noVNC/archive/refs/tags/v1.6.0.zip"
 NOVNC_ZIP_FILE="v1.6.0.zip"
 NOVNC_EXTRACTED_FOLDER="noVNC-1.6.0"
@@ -104,7 +104,12 @@ fi
 
 # Ensure novnc_proxy is executable
 if [ -f "${NOVNC_DIR}/utils/novnc_proxy" ]; then
-    chmod +x "${NOVNC_DIR}/utils/novnc_proxy"
+    if [ -x "${NOVNC_DIR}/utils/novnc_proxy" ]; then
+        echo "The noVNC proxy script is a file and is executable."
+    else
+        echo "[ERROR] The noVNC proxy script exists but is not executable. Please check its permissions."
+        exit 1
+    fi
 else
     echo "[ERROR] noVNC proxy script not found at ${NOVNC_DIR}/utils/novnc_proxy."
     exit 1
@@ -174,4 +179,3 @@ echo "------------------------------------------------------------------"
 # --- Wait for Job to End ---
 # Keep the script running. The 'trap' will handle cleanup when the job is killed.
 wait ${NOVNC_PID} # Wait for the noVNC proxy process to finish, or until the script is terminated
-
