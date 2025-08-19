@@ -153,7 +153,7 @@ update-grub
 Create initial snapshot[^timeshift]:
 [^timeshift]: If this does not work, check correct default subvolume setting (`btrfs su set-default 5 /`) or set device UUID (`timeshift --snapshot-device UUID`).
 ```console
-timeshift --create -comments "some comment"
+# timeshift --create -comments "some comment"
 ```
 
 The base system should be installed and ready.
@@ -162,50 +162,49 @@ The base system should be installed and ready.
 
 Either manually install git and clone this entire repository:
 ```console
-$ apt update && apt upgrade
-$ apt install git 
-$ cd ~/Documents
-$ git clone https://github.com/Mhuzvar/RadioPBS.git
-$ cd RadioPBS
+# apt update && apt upgrade
+# apt install git
+# git clone https://github.com/Mhuzvar/RadioPBS.git
+# cd RadioPBS
 ```
 or only download the installation script (git and updates are later installed from within the script):
 ```console
-$ wget https://raw.githubusercontent.com/Mhuzvar/RadioPBS/refs/heads/main/install_PBS.sh
+# wget https://raw.githubusercontent.com/Mhuzvar/RadioPBS/refs/heads/main/install_PBS.sh
 ```
 Whichever option you choose, you should now be able to run the prepared installation script.
 ```console
-$ chmod +x ./install_PBS.sh
-$ ./install_PBS.sh
-$ . /etc/profile.d/pbs.sh
+# chmod +x ./install_PBS.sh
+# ./install_PBS.sh
+# . /etc/profile.d/pbs.sh
 ```
 You may need to adjust the /etc/hosts file and/or run the following commands (if `sudo /etc/init.d/pbs status` results in `pbs_server is not running`):
 ```console
-$ rm -rf /var/spool/pbs/datastore
-$ /etc/init.d/pbs start
+# rm -rf /var/spool/pbs/datastore
+# /etc/init.d/pbs start
 ```
 **RERUN THE COMMANDS ABOVE IF PBS FAILS TO START!**
 
 Moreover, if you get `` and `` when you try to run a qsub job, you might need to run the following command as root:
 ```console
-qmgr -c "set server flatuid=true"
+# qmgr -c "set server flatuid=true"
 ```
 
 Next up is setting up pbs hooks. To do so, it is needed to do the following:
 ```console
 #replace .split('-')[0] with .split('+')[0].split('-')[0] on line rel = list(map(int, (platform.release().split('+')[0].split('-')[0].split('.')))) in /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
-nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
+# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
 
 #enable cpu and memory management in /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF if not enabled already
-nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
+# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
 
 #enable the hook
-qmgr -c "import hook pbs_cgroups application/x-config default /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF"
-qmgr -c "import hook pbs_cgroups application/x-python default /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY"
-qmgr -c "set hook pbs_cgroups fail_action=none"
-qmgr -c "set hook pbs_cgroups enabled=true"
+# qmgr -c "import hook pbs_cgroups application/x-config default /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF"
+# qmgr -c "import hook pbs_cgroups application/x-python default /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY"
+# qmgr -c "set hook pbs_cgroups fail_action=none"
+# qmgr -c "set hook pbs_cgroups enabled=true"
 
 #restart pbs
-systemctl restart pbs
+# systemctl restart pbs
 ```
 
 PBS server should now be up and running in its default configuration. To replicate our setup, we are working on `setup_PBS.sh` to automate this step. **This script is not finished yet and may not work at best and break your installation at worst.**
