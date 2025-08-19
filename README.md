@@ -52,7 +52,6 @@ mnt/ # btrfs su cr @root
 mnt/ # btrfs su cr @log
 mnt/ # btrfs su cr @tmp
 mnt/ # btrfs su cr @opt
-mnt/ # btrfs su cr @.snapshots
 mnt/ # mount -o noatime,compress=zstd:1,subvol=@ /dev/nvme1n1p2 /target
 mnt/ # mkdir -p /target/boot/efi
 mnt/ # mkdir -p /target/home
@@ -121,7 +120,7 @@ Select `Finish the installation`, `<Yes>` to UTC clock and `<Continue>` to reboo
 Once rebooted, login as root.
 Install basic uilities:
 ```console
-root@hostname:~# apt install sudo zram-tools nvidia-drivier snapper
+root@hostname:~# apt install zram-tools nvidia-drivier timeshift
 ```
 and reboot afterwards. Open `zramswap` file
 ```console
@@ -133,23 +132,34 @@ Restart the service:
 root@hostname:~# systemctl restart zramswap.service
 ```
 
-Create an initial snapshot of the system with...
+Change `cgroups` from version 2 to version 1:
+```console
+# nano /tec/default/grub
+```
+Edit `GRUB_CMD_LINUX_DEFAULT=` to
+```
+GRUB_CMD_LINUX_DEFAULT="quiet systemd.unified_cgroup_hierarchy=0"
+```
+and reboot. Type
+```console
+# mount | grep cgroup
+```
+and look for `cpuset` and `memory`. If you can see them, cgroups is set up fine.
+
+```
+update-grub
+```
+
+Create initial snapshot[^timeshift]:
+[^timeshift]: If this does not work, check correct default subvolume setting (`btrfs su set-default 5 /`) or set device UUID (`timeshift --snapshot-device UUID`).
+```console
+timeshift --create -comments "some comment"
+```
 
 The base system should be installed and ready.
 
 ### Preparing the system
 
-Once installed, add your user to sudoers:
-```console
-$ nano /etc/sudoers
-```
-Find a line containing `root ALL=(ALL:ALL) ALL` and add the following line under it:
-```
-username ALL=(ALL:ALL) ALL
-```
-It should also be possible to just do `adduser username sudo`, but sometimes this doesn't work.
-
-Once the user has sudo rights there are two ways to continue with the installation.
 Either manually install git and clone this entire repository:
 ```console
 $ sudo apt update && sudo apt upgrade
