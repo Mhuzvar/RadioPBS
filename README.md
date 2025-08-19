@@ -253,6 +253,57 @@ MemoryMax= #override the memory limit
 CPUQuota= #override the cpu limit
 ```
 
+#### Install Apptainer/Singularity
+```console
+root@hostname:~# wget https://github.com/apptainer/apptainer/releases/download/v1.4.2/apptainer_1.4.2_amd64.deb # or any newer release
+root@hostname:~# apt install libfuse3-3 uidmap libsubid4
+root@hostname:~# dpkg -i ./apptainer_1.4.2_amd64.deb # or the version you downloaded
+```
+
+#### VNC setup
+Check https://github.com/Mhuzvar/RadioPBS/blob/main/VNC.md
+
+#### Custom bash completions
+So that each user can easily navigate to the scratch and data directories, as well as to launch noVNC.
+```console
+root@hostname:~# touch /etc/profile.d/custom_shell_completions.sh
+root@hostname:~# chmod +x /etc/profile.d/custom_shell_completions.sh
+root@hostname:~# nano /etc/profile.d/custom_shell_completions.sh
+```
+
+Fill the script with:
+```console
+#!/bin/bash
+
+# Definition of base directories
+SCRATCH_BASE="/mnt/scratch"
+DATA_BASE="/mnt/data"
+
+# Set the SCRATCH, DISK1, and DISK2 variables
+export SCRATCH="$SCRATCH_BASE/$USER"
+export DATA="$DATA_BASE/$USER"
+
+# Check if the user's scratch directory exists.
+# The "-d" flag checks if the path is a directory.
+if [ ! -d "$SCRATCH" ]; then
+    # Create the directory, including parent directories if needed.
+    # The "-p" flag ensures that if /mnt/scratch doesn't exist, it's created first.
+    # The "-m 0740" sets the permissions for the new directory.
+    mkdir -p -m 0740 "$SCRATCH"
+fi
+
+# Check if the user's scratch directory exists.
+# The "-d" flag checks if the path is a directory.
+if [ ! -d "$DATA" ]; then
+    # Create the directory, including parent directories if needed.
+    # The "-p" flag ensures that if /mnt/data doesn't exist, it's created first.
+    # The "-m 0740" sets the permissions for the new directory.
+    mkdir -p -m 0740 "$DATA"
+fi
+
+# Set a system wide alias for noVNC
+alias noVNC="/etc/ssl/noVNC/pbs-launch-gui.sh"
+```
 
 ## Older notes
 
