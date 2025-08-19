@@ -134,7 +134,7 @@ root@hostname:~# systemctl restart zramswap.service
 
 Change `cgroups` from version 2 to version 1:
 ```console
-# nano /tec/default/grub
+root@hostname:~# nano /tec/default/grub
 ```
 Edit `GRUB_CMD_LINUX_DEFAULT=` to
 ```
@@ -142,75 +142,113 @@ GRUB_CMD_LINUX_DEFAULT="quiet systemd.unified_cgroup_hierarchy=0"
 ```
 and reboot. Type
 ```console
-# mount | grep cgroup
+root@hostname:~# mount | grep cgroup
 ```
 and look for `cpuset` and `memory`. If you can see them, cgroups is set up fine.
 
-```
-update-grub
+```console
+root@hostname:~# update-grub
 ```
 
 Create initial snapshot[^timeshift]:
 [^timeshift]: If this does not work, check correct default subvolume setting (`btrfs su set-default 5 /`) or set device UUID (`timeshift --snapshot-device UUID`).
 ```console
-# timeshift --create -comments "some comment"
+root@hostname:~# timeshift --create -comments "some comment"
 ```
 
 The base system should be installed and ready.
 
 ### Preparing the system
 
+#### Setup OpenPBS
+
 Either manually install git and clone this entire repository:
 ```console
-# apt update && apt upgrade
-# apt install git
-# git clone https://github.com/Mhuzvar/RadioPBS.git
-# cd RadioPBS
+root@hostname:~# apt update && apt upgrade
+root@hostname:~# apt install git
+root@hostname:~# git clone https://github.com/Mhuzvar/RadioPBS.git
+root@hostname:~# cd RadioPBS
 ```
 or only download the installation script (git and updates are later installed from within the script):
 ```console
-# wget https://raw.githubusercontent.com/Mhuzvar/RadioPBS/refs/heads/main/install_PBS.sh
+root@hostname:~# wget https://raw.githubusercontent.com/Mhuzvar/RadioPBS/refs/heads/main/install_PBS.sh
 ```
 Whichever option you choose, you should now be able to run the prepared installation script.
 ```console
-# chmod +x ./install_PBS.sh
-# ./install_PBS.sh
-# . /etc/profile.d/pbs.sh
+root@hostname:~# chmod +x ./install_PBS.sh
+root@hostname:~# ./install_PBS.sh
+root@hostname:~# . /etc/profile.d/pbs.sh
 ```
 You may need to adjust the /etc/hosts file and/or run the following commands (if `sudo /etc/init.d/pbs status` results in `pbs_server is not running`):
 ```console
-# rm -rf /var/spool/pbs/datastore
-# /etc/init.d/pbs start
+root@hostname:~# rm -rf /var/spool/pbs/datastore
+root@hostname:~# /etc/init.d/pbs start
 ```
 **RERUN THE COMMANDS ABOVE IF PBS FAILS TO START!**
 
 Moreover, if you get `` and `` when you try to run a qsub job, you might need to run the following command as root:
 ```console
-# qmgr -c "set server flatuid=true"
+root@hostname:~# qmgr -c "set server flatuid=true"
 ```
 
-Next up is setting up pbs hooks. To do so, it is needed to do the following:
+Next up is setting up pbs hooks[^hooks]. To do so, it is needed to do the following:
+[^hooks]: See also https://github.com/CESNET/pbs.hooks.
 ```console
 #replace .split('-')[0] with .split('+')[0].split('-')[0] on line rel = list(map(int, (platform.release().split('+')[0].split('-')[0].split('.')))) in /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
-# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
+root@hostname:~# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY
 
 #enable cpu and memory management in /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF if not enabled already
-# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
+root@hostname:~# nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
 
 #enable the hook
-# qmgr -c "import hook pbs_cgroups application/x-config default /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF"
-# qmgr -c "import hook pbs_cgroups application/x-python default /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY"
-# qmgr -c "set hook pbs_cgroups fail_action=none"
-# qmgr -c "set hook pbs_cgroups enabled=true"
+root@hostname:~# qmgr -c "import hook pbs_cgroups application/x-config default /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF"
+root@hostname:~# qmgr -c "import hook pbs_cgroups application/x-python default /var/spool/pbs/server_priv/hooks/pbs_cgroups.PY"
+root@hostname:~# qmgr -c "set hook pbs_cgroups fail_action=none"
+root@hostname:~# qmgr -c "set hook pbs_cgroups enabled=true"
 
 #restart pbs
-# systemctl restart pbs
+root@hostname:~# systemctl restart pbs
+```
+
+The configuration of the default queue (workq) can then be adjusted:
+```console
+root@hostname:~# qmgr -c "set queue workq resources_default.walltime=01:00:00"
+root@hostname:~# qmgr -c "set queue workq resources_max.walltime=24:00:00"
+root@hostname:~# qmgr -c "set queue workq resources_default.ncpus=1"
+root@hostname:~# qmgr -c "set queue workq resources_max.ncpus=16"
+root@hostname:~# qmgr -c "set queue workq resources_default.mem=1gb"
+root@hostname:~# qmgr -c "set queue workq resources_max.mem=64gb"
 ```
 
 PBS server should now be up and running in its default configuration. To replicate our setup, we are working on `setup_PBS.sh` to automate this step. **This script is not finished yet and may not work at best and break your installation at worst.**
 ```console
 $ cd ~/Documents/RadioPBS
 $ ./setup_PBS.sh
+```
+
+#### Setup cgroup limits
+It is possible to also use cgroup slices to limit what users can do when they login via SSH. This should force users to leverage OpenPBS (as they will have to request resources to use more than is set up in the slices). The slices can be setup the following way:
+```console
+root@hostname:~# mkdir /etc/systemd/system/user-.slice.d # for all users
+root@hostname:~# mkdir /etc/systemd/system/user-0.slice.d # override for root
+root@hostname:~# mkdir /etc/systemd/system/user-1000.slice.d # override for a specific user
+root@hostname:~# nano /etc/systemd/system/user-.slice.d/50-limits.conf #can contain:
+```
+
+```console
+[Slice]
+MemoryMax=1G #limit the memory
+CPUQuota=50% #limit the cpu to half a thread/core
+```
+
+```console
+root@hostname:~# nano /etc/systemd/system/user-0.slice.d/override.conf # and user-1000.slice.d/override.conf can contain:
+```
+
+```console
+[Slice]
+MemoryMax= #override the memory limit
+CPUQuota= #override the cpu limit
 ```
 
 
