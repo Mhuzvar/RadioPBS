@@ -157,6 +157,8 @@ root@hostname:~# timeshift --create -comments "some comment"
 ```
 
 The base system should be installed and ready.
+It is also recommended to set up grub-btrfs[^grub-btrfs].
+[^grub-btrfs]: https://github.com/Antynea/grub-btrfs
 
 ### Preparing the system
 
