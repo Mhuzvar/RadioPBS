@@ -4,7 +4,7 @@ How to setup PBS queues
 
 ### GPU setup
 
-```
+```bash
 qmgr -c "create resource ngpus type=long flag=nh"
 
 #adjust /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
@@ -24,7 +24,7 @@ systemctl restart pbs
 ```
 
 ### workq - the default queue
-```
+```bash
 qmgr -c "set queue workq priority=50"
 qmgr -c "set queue workq resources_default.walltime=01:00:00"
 qmgr -c "set queue workq resources_max.walltime=12:00:00"
@@ -41,7 +41,7 @@ qmgr -c "set queue workq resources_max.mem=64gb"
 
 ### staffq - the staff queue
 This queue has a higher priority, possibly longer jobs, and access only for specified users.
-```
+```bash
 qmgr -c "create queue staffq"
 qmgr -c "set queue staffq priority=80"
 qmgr -c "set queue staffq resources_default.walltime=01:00:00"
@@ -63,7 +63,7 @@ qmgr -c "set queue staffq started=True"
 
 ### cpuq - the CPU only queue
 This queue has a higher priority, possibly longer jobs, but should be CPU only.
-```
+```bash
 qmgr -c "create queue cpuq"
 qmgr -c "set queue cpuq priority=80"
 qmgr -c "set queue cpuq resources_default.walltime=01:00:00"
@@ -80,7 +80,7 @@ qmgr -c "set queue cpuq started=True"
 ```
 
 ### other usefull PBS commands
-```
+```bash
 # enable history
 qmgr -c "set server job_history_enable=true"
 qmgr -c "set server job_history_duration=720:00:00"
@@ -98,9 +98,9 @@ qstat -Q
 It is also possible to use cgroups to further limit user resources (in certain scenarios).
 
 ### limit ssh user resources
-```
-sudo mkdir -p /etc/systemd/system/user-.slice.d
-sudo tee /etc/systemd/system/user-.slice.d/limits.conf > /dev/null <<'EOF'
+```bash
+mkdir -p /etc/systemd/system/user-.slice.d
+tee /etc/systemd/system/user-.slice.d/limits.conf > /dev/null <<'EOF'
 [Slice]
 CPUQuota=50%
 MemoryMax=1G
