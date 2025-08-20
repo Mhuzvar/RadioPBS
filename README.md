@@ -222,6 +222,8 @@ root@hostname:~# qmgr -c "set queue workq resources_default.mem=1gb"
 root@hostname:~# qmgr -c "set queue workq resources_max.mem=64gb"
 ```
 
+For more PBS setup steps see [PBS post install](https://github.com/Mhuzvar/RadioPBS/blob/main/post_install_PBS.md).
+
 PBS server should now be up and running in its default configuration. To replicate our setup, we are working on `setup_PBS.sh` to automate this step. **This script is not finished yet and may not work at best and break your installation at worst.**
 ```console
 $ cd ~/Documents/RadioPBS
@@ -260,8 +262,8 @@ root@hostname:~# apt install libfuse3-3 uidmap libsubid4
 root@hostname:~# dpkg -i ./apptainer_1.4.2_amd64.deb # or the version you downloaded
 ```
 
-#### VNC setup
-Check https://github.com/Mhuzvar/RadioPBS/blob/main/VNC.md
+#### VNC and noVNC setup
+Check the [accompanying document](https://github.com/Mhuzvar/RadioPBS/blob/main/VNC.md).
 
 #### Custom bash completions
 So that each user can easily navigate to the scratch and data directories, as well as to launch noVNC.
@@ -272,7 +274,7 @@ root@hostname:~# nano /etc/profile.d/custom_shell_completions.sh
 ```
 
 Fill the script with:
-```console
+```bash
 #!/bin/bash
 
 # Definition of base directories
