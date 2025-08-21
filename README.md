@@ -262,6 +262,30 @@ root@hostname:~# apt install libfuse3-3 uidmap libsubid4
 root@hostname:~# dpkg -i ./apptainer_1.4.2_amd64.deb # or the version you downloaded
 ```
 
+#### Newer NVIDIA drivers
+
+```console
+root@hostname:~# wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+root@hostname:~# dpkg -i cuda-keyring_1.1-1_all.deb
+root@hostname:~# apt update && apt upgrade
+root@hostname:~# apt-get install -Vy nvidia-open cuda-toolkit # might need to uninstall nvidia-driver and run apt autoremove
+```
+nvcc might not be added to path, if that is the case then
+```console
+root@hostname:~# find / -name nvcc 2>/dev/null # find where nvcc is
+root@hostname:~# touch /etc/profile.d/cuda.sh
+root@hostname:~# nano /etc/profile.d/cuda.sh
+```
+```bash
+# the path to nvcc could be different, change accordingly
+export PATH="/usr/local/cuda-13.0/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH"
+export CUDA_HOME="/usr/local/cuda-13.0"
+```
+```console
+root@hostname:~# systemctl deamon-reload
+```
+
 #### VNC and noVNC setup
 Check the [accompanying document](https://github.com/Mhuzvar/RadioPBS/blob/main/VNC.md).
 
