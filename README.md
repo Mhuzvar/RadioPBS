@@ -281,6 +281,7 @@ root@hostname:~# nano /etc/profile.d/cuda.sh
 export PATH="/usr/local/cuda-13.0/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH"
 export CUDA_HOME="/usr/local/cuda-13.0"
+export LIBRARY_PATH="/usr/local/cuda/lib64/stubs:$LIBRARY_PATH"
 ```
 ```console
 root@hostname:~# systemctl deamon-reload
