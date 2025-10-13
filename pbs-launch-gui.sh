@@ -149,7 +149,7 @@ SSL_CERT="/etc/ssl/noVNC/self.pem" #change accordingly
 # --- Start noVNC Proxy ---
 echo "[INFO] Starting noVNC proxy on port ${NOVNC_PROXY_PORT}..."
 # Run noVNC proxy in the background, redirecting output to a log file
-nohup "${NOVNC_DIR}/utils/novnc_proxy" --vnc "localhost:${VNC_PORT}" --listen "${NOVNC_PROXY_PORT}" --heartbeat 10 --timeout 240 --cert "${SSL_CERT}" > novnc_proxy.log 2>&1 &
+nohup "${NOVNC_DIR}/utils/novnc_proxy" --vnc "localhost:${VNC_PORT}" --listen "${NOVNC_PROXY_PORT}" --heartbeat 10 --timeout 43200 --idle-timeout 43200 --cert "${SSL_CERT}" --ssl-only > novnc_proxy.log 2>&1 &
 NOVNC_PID=$! # Capture the PID of the noVNC proxy process
 echo "[INFO] noVNC proxy started with PID: ${NOVNC_PID}"
 sleep 2 # Give noVNC proxy a moment to start
