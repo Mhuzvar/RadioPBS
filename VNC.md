@@ -114,3 +114,58 @@ chgrp -R users /etc/ssl/noVNC
 chmod -R 750 /etc/ssl/noVNC
 ```
 
+### 6\. Create a 404 page
+By default, when the user tries to access the ip:port without /vnc.html, noVNC displays its directory structure. To mitigate this, it is possible to create an index.html file in the noVNC path (next to vnc.html, etc.) with some content, such as
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            margin: 0 auto;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #d9534f; /* Red color for error */
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404 Not Found</h1>
+        <p>Oops! The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+        <p>Please check the URL for any typos.</p>
+        <p>If you were trying to access the VNC console, please use the provided link starting with <code>https://your_ip:port/vnc.html</code></p>
+    </div>
+</body>
+</html>
+```
+
