@@ -109,3 +109,24 @@ EOF
 sudo systemctl daemon-reexec or systemctl daemon-reload
 ```
 The above limits each user that logs in via SSH to 1G of RAM and 50% of one CPU core. If the user wants more, he/she has to submit a PBS job.
+
+## mailer
+
+To use the mailer functionality of OpenPBS it is needed to install and setup a mailer. A simple setup involves
+
+```bash
+apt install mailutils postfix libsasl2-modules
+
+# then setup the config
+nano /etc/postfix/main.cf
+postfix reload
+
+# test a plain email
+echo "Test email body" | mail -s "Test Email Subject" <test@email.com>
+
+# if it works, then setup the mail from field in qmgr
+qmgr -c "set server mail_from = test@email.com"
+
+# OpenPBS should then be able to send email via the -M flag, such as
+qsub -M test@email.com -m bae -I
+```
