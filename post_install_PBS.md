@@ -7,14 +7,15 @@ How to setup PBS queues
 ```bash
 qmgr -c "create resource ngpus type=long flag=nh"
 
-#adjust /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
-nano /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF
+# adjust the pbs hook
+qmgr -c "export hook pbs_cgroups application/x-config default" > pbs_cgroups.json
 
-# add device and enable devices and cpuset
-["nvidiactl", "rwm"] # should be added after "c *:* rwm",
+# add device, then enable devices and cpuset
+# see pbs_cgoups.json for an example
+# use ls -l /dev/nvidia* when necessary
 
 # import the hook
-qmgr -c "import hook pbs_cgroups application/x-config default /var/spool/pbs/server_priv/hooks/pbs_cgroups.CF"
+qmgr -c "import hook pbs_cgroups application/x-config default pbs_cgroups.json"
 
 # add ngpus to /var/spool/pbs/sched_priv/sched_config after ncpus, mem, etc.
 
@@ -23,15 +24,17 @@ qmgr -c "set node HOSTNAME resources_available.ngpus=1"
 systemctl restart pbs
 ```
 
+Do not forget to adjust the cgroups in /etc/systemd/system/.
+
 ### workq - the default queue
 ```bash
 qmgr -c "set queue workq priority=50"
 qmgr -c "set queue workq resources_default.walltime=01:00:00"
 qmgr -c "set queue workq resources_max.walltime=12:00:00"
-qmgr -c "set queue workq resources_default.ncpus=1"
+qmgr -c "set queue workq default_chunk.ngpus=1"
 qmgr -c "set queue workq resources_max.ncpus=8"
 qmgr -c "set queue workq queue_type=execution"
-qmgr -c "set queue workq max_running=1"
+qmgr -c "set queue workq max_run = [u:PBS_GENERIC=1]"
 qmgr -c "set queue workq resources_default.ngpus=1"
 qmgr -c "set queue workq resources_max.ngpus=1"
 qmgr -c "set queue workq resources_default.mem=1gb"
@@ -49,7 +52,7 @@ qmgr -c "set queue staffq resources_max.walltime=24:00:00"
 qmgr -c "set queue staffq resources_default.ncpus=1"
 qmgr -c "set queue staffq resources_max.ncpus=8"
 qmgr -c "set queue staffq queue_type=execution"
-qmgr -c "set queue staffq max_running=1"
+qmgr -c "set queue workq max_run = [u:PBS_GENERIC=1]"
 qmgr -c "set queue staffq resources_default.ngpus=1"
 qmgr -c "set queue staffq resources_max.ngpus=1"
 qmgr -c "set queue staffq resources_default.mem=1gb"
@@ -68,7 +71,7 @@ qmgr -c "create queue cpuq"
 qmgr -c "set queue cpuq priority=80"
 qmgr -c "set queue cpuq resources_default.walltime=01:00:00"
 qmgr -c "set queue cpuq resources_max.walltime=48:00:00"
-qmgr -c "set queue cpuq resources_default.ncpus=1"
+qmgr -c "set queue staffq default_chunk.ngpus=1"
 qmgr -c "set queue cpuq resources_max.ncpus=8"
 qmgr -c "set queue cpuq resources_default.ngpus=0"
 qmgr -c "set queue cpuq resources_max.ngpus=0"
@@ -84,6 +87,10 @@ qmgr -c "set queue cpuq started=True"
 # enable history
 qmgr -c "set server job_history_enable=true"
 qmgr -c "set server job_history_duration=720:00:00"
+
+# set max number of jobs for a user overall
+qmgr -c "set server max_run = [u:PBS_GENERIC=2]"
+
 qstat -fx
 
 # check current resource usage (available and assigned)

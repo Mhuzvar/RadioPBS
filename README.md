@@ -160,6 +160,36 @@ The base system should be installed and ready.
 It is also recommended to set up grub-btrfs[^grub-btrfs].
 [^grub-btrfs]: https://github.com/Antynea/grub-btrfs
 
+### NVIDIA drivers
+
+If you run into issues with the NVIDIA drivers after install or update, check if you have linux-headers installed. If not, install them and check nvidia-smi.
+
+### SSH and Firewall
+
+#### SSH
+In /etc/ssh/sshd_config set PermitRootLogin no.
+
+#### Firewall
+
+Install nftables if they are not already present. Then limit access to a desired ip range (or ranges).
+
+```console
+root@hostname:~# nano /etc/nftables.conf
+
+flush ruleset
+
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		ct state established,related accept
+		iif "lo" accept
+		ip saddr XX.XX.XX.XX/XX accept
+        ip saddr YY.YY.YY.YY/YY accept
+	}
+}
+```
+
+
 ### Preparing the system
 
 #### Setup OpenPBS
@@ -243,6 +273,14 @@ root@hostname:~# nano /etc/systemd/system/user-.slice.d/50-limits.conf #can cont
 [Slice]
 MemoryMax=1G #limit the memory
 CPUQuota=50% #limit the cpu to half a thread/core
+DevicePolicy=strict #limit access to devices - needed for GPU setup
+DeviceAllow=char-tty rw #allow specific devices
+DeviceAllow=/dev/null rw
+DeviceAllow=/dev/zero rw
+DeviceAllow=/dev/random r
+DeviceAllow=/dev/urandom r
+DeviceAllow=/dev/ptmx rw
+DeviceAllow=char-pts rw
 ```
 
 ```console
@@ -251,8 +289,16 @@ root@hostname:~# nano /etc/systemd/system/user-0.slice.d/override.conf # and use
 
 ```console
 [Slice]
-MemoryMax= #override the memory limit
-CPUQuota= #override the cpu limit
+MemoryMax=infinity #override the memory limit
+MemoryHigh=infinity
+CPUQuota=3200% #override the cpu limit
+DevicePolicy=auto #allow root access to devices
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SYS_PTRACE CAP_FOWNER CAP_CHOWN
+DeviceAllow=/dev/nvidia0 rw
+DeviceAllow=/dev/nvidiactl rw
+DeviceAllow=/dev/nvidia-uvm rw
+DeviceAllow=/dev/nvmeXnXpX rwm #needed for timeshift to work
+DeviceAllow=/dev/btrfs-control rw #needed for timeshift to work
 ```
 
 #### Install Apptainer/Singularity
