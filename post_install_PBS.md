@@ -30,7 +30,7 @@ Do not forget to adjust the cgroups in /etc/systemd/system/.
 ```bash
 qmgr -c "set queue workq priority=50"
 qmgr -c "set queue workq resources_default.walltime=01:00:00"
-qmgr -c "set queue workq resources_max.walltime=12:00:00"
+qmgr -c "set queue workq resources_max.walltime=04:00:00"
 qmgr -c "set queue workq default_chunk.ngpus=1"
 qmgr -c "set queue workq resources_max.ncpus=8"
 qmgr -c "set queue workq queue_type=execution"
@@ -42,17 +42,61 @@ qmgr -c "set queue workq resources_max.mem=64gb"
 ```
 
 
+### gpu_long - long GPU queue without ACL
+```bash
+qmgr -c "create queue gpu_long"
+qmgr -c "set queue gpu_long priority=40"
+qmgr -c "set queue gpu_long resources_default.walltime=01:00:00"
+qmgr -c "set queue gpu_long resources_max.walltime=24:00:00"
+qmgr -c "set queue gpu_long default_chunk.ngpus=1"
+qmgr -c "set queue gpu_long resources_max.ncpus=8"
+qmgr -c "set queue gpu_long resources_default.ngpus=1"
+qmgr -c "set queue gpu_long resources_max.ngpus=1"
+qmgr -c "set queue gpu_long queue_type=execution"
+qmgr -c "set queue gpu_long resources_default.mem=1gb"
+qmgr -c "set queue gpu_long resources_max.mem=64gb"
+qmgr -c "set queue gpu_long enabled=True"
+qmgr -c "set queue gpu_long started=True"
+```
+
+#### create a hook to disable interactivity
+```bash
+# interactive_reject.py
+import pbs
+
+# Queues where interactive jobs are NOT allowed:
+NO_INTERACTIVE_QUEUES = ["gpu_long"]
+
+e = pbs.event()
+j = e.job
+
+# Resolve the target queue (jobs submitted without -q land in the default queue)
+if hasattr(j.queue, "name") and j.queue.name:
+    qname = str(j.queue.name)
+else:
+    qname = str(pbs.server().default_queue)
+
+if qname in NO_INTERACTIVE_QUEUES and j.interactive:
+    e.reject("Interactive jobs are not allowed in queue '%s'" % qname)
+```
+
+Install and enable it:
+```bash
+qmgr -c 'create hook intcheck event=queuejob'
+qmgr -c 'import hook intcheck application/x-python default interactive_reject.py'
+```
+
 ### staffq - the staff queue
 This queue has a higher priority, possibly longer jobs, and access only for specified users.
 ```bash
 qmgr -c "create queue staffq"
 qmgr -c "set queue staffq priority=80"
 qmgr -c "set queue staffq resources_default.walltime=01:00:00"
-qmgr -c "set queue staffq resources_max.walltime=24:00:00"
+qmgr -c "set queue staffq resources_max.walltime=48:00:00"
 qmgr -c "set queue staffq resources_default.ncpus=1"
 qmgr -c "set queue staffq resources_max.ncpus=8"
 qmgr -c "set queue staffq queue_type=execution"
-qmgr -c "set queue workq max_run = [u:PBS_GENERIC=1]"
+qmgr -c "set queue staffq max_run = [u:PBS_GENERIC=1]"
 qmgr -c "set queue staffq resources_default.ngpus=1"
 qmgr -c "set queue staffq resources_max.ngpus=1"
 qmgr -c "set queue staffq resources_default.mem=1gb"
@@ -71,7 +115,7 @@ qmgr -c "create queue cpuq"
 qmgr -c "set queue cpuq priority=80"
 qmgr -c "set queue cpuq resources_default.walltime=01:00:00"
 qmgr -c "set queue cpuq resources_max.walltime=48:00:00"
-qmgr -c "set queue staffq default_chunk.ngpus=1"
+qmgr -c "set queue cpuq default_chunk.ngpus=0"
 qmgr -c "set queue cpuq resources_max.ncpus=8"
 qmgr -c "set queue cpuq resources_default.ngpus=0"
 qmgr -c "set queue cpuq resources_max.ngpus=0"
